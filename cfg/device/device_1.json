@@ -1,0 +1,33 @@
+{
+    "type": "操作柜类型1",
+    "lights": {
+        "line_1": {
+            "light_1": "line_1_light_1_func"
+        },
+        "line_2": {
+            "light_1": "line_2_light_1_func"
+        }
+    },
+    "straps": {
+        "line_1": {
+            "strap_1": "line_1_strap_1_func",
+            "strap_2": "line_1_strap_2_func"
+        },
+        "line_2": {
+            "strap_1": "line_2_strap_1_func",
+            "strap_2": "line_2_strap_2_func",
+            "strap_3": "line_2_strap_3_func",
+            "strap_4": "line_2_strap_4_func",
+            "strap_5": "line_2_strap_5_func",
+            "strap_6": "line_2_strap_6_func",
+            "strap_7": "line_2_strap_7_func"
+        }
+    }, 
+    "switches": {
+        "line_1": {
+            "switch_1": "line_1_switch_1_func",
+            "switch_2": "line_1_switch_2_func",
+            "switch_3": "line_1_switch_3_func"
+        }
+    }
+}
