@@ -167,6 +167,8 @@ class LoadImages:  # for inference
             # Read video
             self.mode = 'video'
             ret_val, img0 = self.cap.read()
+            # 设置读取帧的间隔
+            self.cap.set(cv2.CAP_PROP_POS_FRAMES, self.frame+12)
             if not ret_val:
                 self.count += 1
                 self.cap.release()
@@ -177,7 +179,7 @@ class LoadImages:  # for inference
                     self.new_video(path)
                     ret_val, img0 = self.cap.read()
 
-            self.frame += 1
+            self.frame += 12
             print(f'video {self.count + 1}/{self.nf} ({self.frame}/{self.nframes}) {path}: ', end='')
 
         else:

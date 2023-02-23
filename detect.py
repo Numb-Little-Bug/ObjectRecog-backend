@@ -23,8 +23,7 @@ from utils.torch_utils import select_device, load_classifier, time_synchronized,
 import config
 
 
-def detect(save_img=False, recognize_type=None, source=None, device='cpu', conf_thres=None, operating_device_conf=None):
-    print('detect')
+def detect(save_img=False, recognize_type=None, source=None, device='cpu', conf_thres=None, operating_device_conf=None, nosave=False):
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='./checkout/yolov7.pt', help='model.pt path(s)')
     parser.add_argument('--source', type=str, default='inference/images', help='source')  # file/folder, 0 for webcam
@@ -47,20 +46,20 @@ def detect(save_img=False, recognize_type=None, source=None, device='cpu', conf_
     parser.add_argument('--operating-device-conf', type=str, default=None,
                         help='path of config file for operating device conf')
     opt = parser.parse_args()
-    if recognize_type == 'switch-light-strap':
-        opt.weights = config.switch_light_strap_model_path
+    if recognize_type == 'operating-cabinet':
+        opt.weights = config.operating_cabinet_model_path
     elif recognize_type == 'helmet':
         opt.weights = config.helmet_detection_model_path
     else:
-        raise ValueError('recognize_type must be switch-light-strap or helmet')
+        raise ValueError('recognize_type must be operating-cabinet or helmet')
     opt.source = source
     opt.device = device
+    opt.nosave = nosave
     if conf_thres is not None:
         opt.conf_thres = conf_thres
     else:
         opt.conf_thres = config.conf_thres
     opt.operating_device_conf = operating_device_conf
-
 
     source, weights, view_img, save_txt, imgsz, trace = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size, opt.trace
     save_img = not opt.nosave and not source.endswith('.txt')  # save inference images
@@ -69,7 +68,7 @@ def detect(save_img=False, recognize_type=None, source=None, device='cpu', conf_
 
     # Operating device configuration
     if opt.operating_device_conf is not None:
-        operating_device_conf_dict = json.load(open(opt.operating_device_conf, 'r'))
+        operating_device_conf_dict = json.loads(opt.operating_device_conf)
     else:
         operating_device_conf_dict = None
 
@@ -81,6 +80,10 @@ def detect(save_img=False, recognize_type=None, source=None, device='cpu', conf_
     set_logging()
     device = select_device(opt.device)
     half = device.type != 'cpu'  # half precision only supported on CUDA
+    detect_result = {}
+    s_s = ''
+    num_operations = -1
+    detect_result_list = []
 
     # Load model
     model = attempt_load(weights, map_location=device)  # load FP32 model
@@ -162,8 +165,10 @@ def detect(save_img=False, recognize_type=None, source=None, device='cpu', conf_
                 straps_y = []
                 switches_x = []
                 switches_y = []
+                num_nohelmet = 0
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
+                    num_nohelmet += int(cls.item())
                     xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
                     line = (cls, *xywh, conf) if opt.save_conf else (cls, *xywh)  # label format
                     if save_txt:  # Write to file
@@ -186,6 +191,13 @@ def detect(save_img=False, recognize_type=None, source=None, device='cpu', conf_
                             straps_y.append(xywh[1])  # y coordinate of the top of the bounding box
                             straps_x.append((xywh[0], cls_int))  # x coordinate of the left of the bounding box
 
+                print('lights_x: ', lights_x)
+                print('lights_y: ', lights_y)
+                print('switches_x: ', switches_x)
+                print('switches_y: ', switches_y)
+                print('straps_x: ', straps_x)
+                print('straps_y: ', straps_y)
+                print('operating_device_conf_dict: ', operating_device_conf_dict)
                 if operating_device_conf_dict is not None:
                     try:
                         # lights
@@ -201,10 +213,15 @@ def detect(save_img=False, recognize_type=None, source=None, device='cpu', conf_
                             lights[i].sort(key=lambda x: x[0][0])
                         lights.sort(key=lambda x: x[0][1])
                         lights_str = ""
+                        lights_lst = []
                         for i in range(len(operating_device_conf_dict.get('lights'))):
                             for j in range(len(lights[i])):
-                                lights_str += operating_device_conf_dict.get('lights').get('line_' + str(i + 1)).get(
-                                    'light_' + str(j + 1)) + ": " + str(lights[i][j][0][1]) + "\n"
+                                lights_lst.append({operating_device_conf_dict.get('lights')[i][j].get(
+                                    'name'): config.switch_light_strap_labels[lights[i][j][0][1]]})
+                                lights_str += operating_device_conf_dict.get('lights')[i][j].get(
+                                    'name') + ": " + config.switch_light_strap_labels[lights[i][j][0][1]] + "\n"
+                                # lights_str += operating_device_conf_dict.get('lights').get('line_' + str(i + 1)).get(
+                                #     'light_' + str(j + 1)) + ": " + str(lights[i][j][0][1]) + "\n"
 
                         # switches
                         # k-means clustering to find the switches with the y coordinate
@@ -219,11 +236,17 @@ def detect(save_img=False, recognize_type=None, source=None, device='cpu', conf_
                             switches[i].sort(key=lambda x: x[0][0])
                         switches.sort(key=lambda x: x[0][1])
                         switches_str = ""
+                        switches_lst = []
                         for i in range(len(operating_device_conf_dict.get('switches'))):
                             for j in range(len(switches[i])):
-                                switches_str += operating_device_conf_dict.get('switches').get(
-                                    'line_' + str(i + 1)).get('switch_' + str(j + 1)) + ": " + str(
-                                    switches[i][j][0][1]) + "\n"
+                                switches_lst.append({operating_device_conf_dict.get('switches')[i][j].get(
+                                    'name'): config.switch_light_strap_labels[switches[i][j][0][1]]})
+                                switches_str += operating_device_conf_dict.get('switches')[i][j].get(
+                                    'name') + ": " + config.switch_light_strap_labels[
+                                    switches[i][j][0][1]] + "\n"
+                                # switches_str += operating_device_conf_dict.get('switches').get(
+                                #     'line_' + str(i + 1)).get('switch_' + str(j + 1)) + ": " + str(
+                                #     switches[i][j][0][1]) + "\n"
 
                         # straps
                         # k-means clustering to find the strap with the y coordinate
@@ -234,17 +257,30 @@ def detect(save_img=False, recognize_type=None, source=None, device='cpu', conf_
                         straps = [[] for i in range(num_clusters)]
                         for i in range(len(labels)):
                             straps[labels[i]].append((straps_x[i], straps_y[i]))
-                        # print("straps: ", straps)
                         for i in range(len(straps)):
                             straps[i].sort(key=lambda x: x[0][0])
-                        # print("straps: ", straps)
                         straps.sort(key=lambda x: x[0][1])
                         straps_str = ""
+                        straps_lst = []
                         for i in range(len(operating_device_conf_dict.get('straps'))):
                             for j in range(len(straps[i])):
-                                straps_str += operating_device_conf_dict.get('straps').get('line_' + str(i + 1)).get(
-                                    'strap_' + str(j + 1)) + ": " + str(straps[i][j][0][1]) + "\n"
+                                straps_lst.append({operating_device_conf_dict.get('straps')[i][j].get('name'): config.switch_light_strap_labels[
+                                                   straps[i][j][0][1]]})
+                                # straps_str += operating_device_conf_dict.get('straps').get('line_' + str(i + 1)).get(
+                                #     'strap_' + str(j + 1)) + ": " + str(straps[i][j][0][1]) + "\n"
+                                straps_str += operating_device_conf_dict.get('straps')[i][j].get('name') + ": " + config.switch_light_strap_labels[
+                                    straps[i][j][0][1]] + "\n"
 
+                        detect_result = {"lights": lights_lst, "switches": switches_lst, "straps": straps_lst}
+                        if s_s != s:
+                            detect_result_list.append(detect_result)
+                            num_operations += 1
+                            s_s = s
+                            print('enter')
+                        print('s_s', s_s)
+                        print("------------------------------ DETECT RESULT ------------------------------")
+                        print(detect_result)
+                        print("-------------------------------------------------------------------")
                         print("---------------------------------\n")
                         print(lights_str)
                         print("---------------------------------\n")
@@ -264,6 +300,9 @@ def detect(save_img=False, recognize_type=None, source=None, device='cpu', conf_
                         print(
                             "Perhaps something went wrong with the operating device detection. \n\nPlease check the operating device configuration file.")
                         print("-------------------------------------------------------------------")
+
+                if recognize_type == 'helmet':
+                    detect_result = {"未佩戴安全帽人数": num_nohelmet}
 
             # Print time (inference + NMS)
             print(f'{s}Done. ({t2 - t1:.3f}s)')
@@ -291,9 +330,15 @@ def detect(save_img=False, recognize_type=None, source=None, device='cpu', conf_
                             save_path += '.mp4'
                         vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
                     vid_writer.write(im0)
+            print('num_operations: ', num_operations)
 
     if save_txt or save_img:
         s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
         # print(f"Results saved to {save_dir}{s}")
 
     print(f'Done. ({time.time() - t0:.3f}s)')
+
+    if recognize_type == 'helmet':
+        return detect_result
+    else:
+        return detect_result_list
