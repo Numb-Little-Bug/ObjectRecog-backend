@@ -4,7 +4,7 @@
 import os
 
 import cv2
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, json
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
@@ -19,23 +19,21 @@ import config
 app = Flask(__name__)
 app.config.from_object(config)
 
-# allow cross-origin resource sharing
-CORS(app, origins='*', supports_credentials=True)
-
 db = SQLAlchemy(app)
 
 
 @app.route('/detect/operating_cabinet', methods=['POST'])
 def operating_cabinet():
-    form = request.form
+    data = request.json
     # 从表单中拿到视频链接
-    source = form.get('source')
+    source = data.get('source')
     # 下载视频
     source_file = requests.get(source)
     with open(config.upload_path + '/' + source.split('/')[-1], 'wb') as f:
         f.write(source_file.content)
     # 从表单中拿到设备配置
-    device_type_conf = form.get('device_type_conf')
+    device_type_conf = str(data.get('device_type_conf')).replace('\'', '\"')
+    print('device_type_conf', device_type_conf)
     res = detect(source=config.upload_path + '/' + source.split('/')[-1], recognize_type='operating-cabinet', operating_device_conf=device_type_conf, nosave=False)
 
     return res
@@ -43,9 +41,9 @@ def operating_cabinet():
 
 @app.route('/detect/helmet', methods=['POST'])
 def helmet():
-    form = request.form
+    data = request.json
     # 从表单中拿到视频链接
-    source = form.get('source')
+    source = data.get('source')
     # 下载视频
     source_file = requests.get(source)
     with open(config.upload_path + '/' + source.split('/')[-1], 'wb') as f:
@@ -54,6 +52,10 @@ def helmet():
                  nosave=False)
 
     return res
+
+
+# allow cross-origin resource sharing
+CORS(app, origins='*', supports_credentials=True)
 
 
 if __name__ == '__main__':
