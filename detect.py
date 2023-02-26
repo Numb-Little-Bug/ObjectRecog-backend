@@ -165,6 +165,7 @@ def detect(save_img=False, recognize_type=None, source=None, device='cpu', conf_
                 straps_y = []
                 switches_x = []
                 switches_y = []
+                charged_light = ''
                 num_nohelmet = 0
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
@@ -181,7 +182,11 @@ def detect(save_img=False, recognize_type=None, source=None, device='cpu', conf_
 
                     if operating_device_conf_dict is not None:
                         cls_int = int(cls.item())
-                        if cls_int == 4 or cls_int == 5 or cls_int == 7:
+                        if cls_int == 8:
+                            charged_light = 'uncharged'
+                        elif cls_int == 9:
+                            charged_light = 'charged'
+                        elif cls_int == 4 or cls_int == 5 or cls_int == 7:
                             lights_y.append(xywh[1])  # y coordinate of the top of the bounding box
                             lights_x.append((xywh[0], cls_int))  # x coordinate of the top of the bounding box
                         elif cls_int == 2 or cls_int == 3 or cls_int == 6:
@@ -271,7 +276,7 @@ def detect(save_img=False, recognize_type=None, source=None, device='cpu', conf_
                                 straps_str += operating_device_conf_dict.get('straps')[i][j].get('name') + ": " + config.switch_light_strap_labels[
                                     straps[i][j][0][1]] + "\n"
 
-                        detect_result = {"lights": lights_lst, "switches": switches_lst, "straps": straps_lst}
+                        detect_result = {"lights": lights_lst, "switches": switches_lst, "straps": straps_lst, "charged_light": charged_light}
                         if s_s != s:
                             detect_result_list.append(detect_result)
                             num_operations += 1
