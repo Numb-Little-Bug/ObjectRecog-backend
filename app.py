@@ -40,15 +40,18 @@ def operating_cabinet():
 
     return res
 
+
 @app.route('/detect/helmet', methods=['POST'])
 def helmet():
     form = request.form
-    # 从表单中拿到图片
-    source = request.files.get('source')
-    print(source)
-    # 保存图片
-    source.save('/Users/pangyu/Documents/FWWB-14th/Numb-Little-Bug/ObjectRecog-backend/upload/' + source.filename)
-    res = detect(source='/Users/pangyu/Documents/FWWB-14th/Numb-Little-Bug/ObjectRecog-backend/upload/' + source.filename, recognize_type='helmet', nosave=False)
+    # 从表单中拿到视频链接
+    source = form.get('source')
+    # 下载视频
+    source_file = requests.get(source)
+    with open(config.upload_path + '/' + source.split('/')[-1], 'wb') as f:
+        f.write(source_file.content)
+    res = detect(source=config.upload_path + '/' + source.split('/')[-1], recognize_type='helmet',
+                 nosave=False)
 
     return res
 
