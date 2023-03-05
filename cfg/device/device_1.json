@@ -1,0 +1,75 @@
+{
+    "type": "操作柜类型1",
+    "lights": [
+        [
+            {
+                "name": "line_1_light_1_func",
+                "status": ["light-green", "light-off", "light-red"]
+            }
+        ],
+        [
+            {
+                "name": "line_2_light_1_func",
+                "status": ["light-green", "light-off", "light-red"]
+            }
+        ]
+    ],
+    "straps": [
+        [
+            {
+                "name": "line_1_strap_1_func",
+                "status": ["strap-in", "strap-out"]
+            },
+            {
+                "name": "line_1_strap_2_func",
+                "status": ["strap-in", "strap-out"]
+            }
+        ],
+        [
+            {
+                "name": "line_2_strap_1_func",
+                "status": ["strap-in", "strap-out"]
+            },
+            {
+                "name": "line_2_strap_2_func",
+                "status": ["strap-in", "strap-out"]
+            },
+            {
+                "name": "line_2_strap_3_func",
+                "status": ["strap-in", "strap-out"]
+            },
+            {
+                "name": "line_2_strap_4_func",
+                "status": ["strap-in", "strap-out"]
+            },
+            {
+                "name": "line_2_strap_5_func",
+                "status": ["strap-in", "strap-out"]
+            },
+            {
+                "name": "line_2_strap_6_func",
+                "status": ["strap-in", "strap-out"]
+            },
+            {
+                "name": "line_2_strap_7_func",
+                "status": ["strap-in", "strap-out"]
+            }
+        ]
+    ],
+    "switches": [
+        [
+            {
+                "name": "line_1_switch_1_func",
+                "status": ["switch-left", "switch-middle", "switch-right"]
+            },
+            {
+                "name": "line_1_switch_2_func",
+                "status": ["switch-left", "switch-middle", "switch-right"]
+            },
+            {
+                "name": "line_1_switch_3_func",
+                "status": ["switch-left", "switch-middle", "switch-right"]
+            }
+        ]
+    ]
+}
