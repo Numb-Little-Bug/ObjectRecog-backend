@@ -35,8 +35,11 @@ def operating_cabinet():
     device_type_conf = str(data.get('device_type_conf')).replace('\'', '\"')
     print('device_type_conf', device_type_conf)
     res = detect(source=config.upload_path + '/' + source.split('/')[-1], recognize_type='operating-cabinet', operating_device_conf=device_type_conf, nosave=False)
+    json_res = {}
+    json_res['code'] = 0
+    json_res['result'] = res
 
-    return res
+    return json_res
 
 
 @app.route('/detect/helmet', methods=['POST'])
@@ -51,7 +54,11 @@ def helmet():
     res = detect(source=config.upload_path + '/' + source.split('/')[-1], recognize_type='helmet',
                  nosave=False)
 
-    return res
+    json_res = {}
+    json_res['code'] = 0
+    json_res['result'] = res
+
+    return json_res
 
 
 # allow cross-origin resource sharing

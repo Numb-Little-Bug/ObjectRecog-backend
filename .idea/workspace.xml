@@ -7,8 +7,7 @@
     <list default="true" id="45961d14-c2b3-4062-9f0c-a6998a0f1bae" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/upload/5.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/upload/test.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/upload/test.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/upload/test.mp4" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,7 +89,8 @@
       <workItem from="1677391668711" duration="35000" />
       <workItem from="1677391705754" duration="4066000" />
       <workItem from="1677395961023" duration="5851000" />
-      <workItem from="1677413181438" duration="2591000" />
+      <workItem from="1677413181438" duration="3019000" />
+      <workItem from="1677985726476" duration="3059000" />
     </task>
     <servers />
   </component>
@@ -98,6 +98,6 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/ObjectRecog_backend$ObjectRecog_backend.coverage" NAME="ObjectRecog-backend Coverage Results" MODIFIED="1677398468978" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/ObjectRecog_backend$ObjectRecog_backend.coverage" NAME="ObjectRecog-backend Coverage Results" MODIFIED="1677985755148" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>
