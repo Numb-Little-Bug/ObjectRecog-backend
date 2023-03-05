@@ -6,13 +6,12 @@
 port = 5000
 
 # 使用模型检测的相关配置
-switch_light_strap_model_path = './weights/switch-light-strap-300epoch-default_lr.pt'
 helmet_detection_model_path = './weights/helmet_detection.pt'
-device1_type_config_path = './cfg/device/device_1.json'
-device2_type_config_path = './cfg/device/device_2.json'
-device3_type_config_path = './cfg/device/device_3.json'
+operating_cabinet_model_path = './weights/operating_cabinet.pt'
 source = ''
-conf_thres = 0.65
+conf_thres = 0.75
+
+switch_light_strap_labels = ['strap-in', 'strap-out', 'switch-left', 'switch-middle', 'light-green', 'light-off', 'switch-right', 'light-red']
 
 # 文件上传的路径
 upload_path = './upload'
